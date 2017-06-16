@@ -1,0 +1,15 @@
+Package: w4mclstrpeakpics
+Version: 0.98.1
+Date: 2017-06-15
+Title: W4M Cluster Peak Pics
+Description: Visualize likelihoods and intensities of features among members of a cluster of Workflow4Metabolomics samples.
+Author: Arthur C Eschenlauer <esch0041@umn.edu>
+Maintainer: Arthur C Eschenlauer <eschen@alumni.princeton.edu>
+License: MIT + file LICENSE
+RoxygenNote: 6.0.1
+URL: https://github.com/HegemanLab/w4mclstrpeakpics
+Imports: utils
+Suggests: testthat
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
+biocViews: Metabolomics
