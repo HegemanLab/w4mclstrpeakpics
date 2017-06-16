@@ -1,0 +1,149 @@
+---
+title: "Visualize W4M sample-cluster peaks"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Visualize W4M sample-cluster peaks}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+### Purpose of the `w4mclstrpeakpics` package
+
+`w4mclstrpeakpics::pool_peak_assessment` produces a figure comprising four 
+graphs to assess the similarities and differences among peaks in a cluster 
+of samples using XCMS-preprocessed data files as input.  
+The figures are described in sections below.
+
+The purpose of the 
+[w4mclstrpeakpics](https://github.com/HegemanLab/w4mclstrpeakpics) 
+R package is to provide the computational back-end of a 
+[Galaxy](https://galaxyproject.org/) 
+tool for inclusion in 
+[Workflow4Metabolomics (W4M)](http://workflow4metabolomics.org/).
+
+Galaxy tools are file-oriented; because of this, the 
+`w4mclstrpeakpics::pool_peak_assessment` method reads from and writes to 
+files.  General-purpose R packages usually use data structures in memory for 
+their input and output, which may mean that this R package is not generally 
+useful outside of the context of Galaxy.
+
+
+### How to use the `pool_peak_assessment` function
+
+A Galaxy tool wrapper invokes `pool_peak_assessment`.  For exploratory or
+debugging purposes, the package may be installed loaded into R and help may 
+then be obtained with the following command:
+
+`?w4mclstrpeakpics::pool_peak_assessment`
+
+W4M uses the XCMS and CAMERA packages to preprocess GC-MS or LC-MS data, 
+producing three files (which are documented in detail on the 
+[Workflow4Metabolomics (W4M)](http://workflow4metabolomics.org/) web site).  
+In summary:
+
+1. `sampleMetadata.tsv`: a tab-separated file with metadata for the samples, 
+   one line per sample
+
+  + One column of this file indicates the *class* of the sample.
+  + It is the class that is used by this function to determine whether to 
+    include the sample in, or exclude the sample from, further analysis.
+
+2. `variableMetadata.tsv`: a tab-separated file with metadata for the features
+   detected, one line per feature
+
+  + A feature is a location in the two dimensional space defined by the GC-MS
+    or LC-MS data set, which corresponds to a compound or a group of compounds.
+  + One dimension is the mass-to-charge ratio, `m/z`.
+  + The other dimension is the `retention time`, i.e., how long until the
+    solvent gradient eluted the compound(s) from the column.
+
+3. `dataMatrix.tsv`: a tab separated file with the MS intensities for each
+   sample for each feature:
+
+  + There is one column per sample.
+  + There is one row per feature.
+  + If a feature is missing for a sample, the intensity value is `NA`.
+  + For numerical reasons, intenisities may be negative, but this has no
+    meaning in the real world.
+
+The `pool_peak_assessment` function reads these files and produces four
+graphs.  Inputs arguments are as follows:
+
+1. `sample_selector_column_name` - string input: column of W4M/XCMS sampleMetadata holding selector string values (default: "sampleType").
+
+2. `sample_selector_value` - string input: value within selector column to identify samples for analysis (default: "pool").
+
+3. `sample_metadata_path` - string input: path to W4M/XCMS sampleMetadata tab-separated values file.
+
+4. `variable_metadata_path` - string input: path to W4M/XCMS variableMetadata tab-separated values file.
+
+5. `data_matrix_path` - string input: path to W4M/XCMS dataMatrix tab-separated values file.
+
+6. `output_pdf` - string output: path to write assessment figure PDF.
+
+7. `output_tsv` - string output: path to write assessment summary tab-separated values file.
+
+8. `output_rdata` - string output: (optional) path to write RData containing all processing and plotting intermediates.
+
+
+### The `Feature Number and Likelihood` graph
+
+The upper left graph in the output figure shows the following:
+
+  + The X axis reflects the number of samples in which a given feature is present 
+    ("the prevalance of a feature among the samples").
+  + For open circles, the Y axis reflects the number of features having the number 
+    of samples reflected on the X axis.
+  + For solid triangles, the Y axis reflects the relative likelihood of features 
+    having the number of samples reflected on the X axis, calculated as 
+    $\frac{(number\hspace{1 mm}of\hspace{1 mm}features) (number\hspace{1 mm}of\hspace{1 mm}samples\hspace{1 mm}per\hspace{1 mm}feature)}{maximum(number\hspace{1 mm}of\hspace{1 mm}samples\hspace{1 mm}per\hspace{1 mm}feature)}$.
+
+Ideally, there would be an upward trend from left to right; if not, XCMS peak-picking parameters
+may need to be adjusted to suppress low-intensity "noise" peaks or to address peak-splitting.
+
+### The `Peak Intensity` graph
+
+The lower left graph in the output figure presents the data in the upper figure without
+summarization, so that "the eye" can do the interpretation.  It shows the following:
+
+  + The X axis reflects the number of samples in which a given feature is present.
+  + The Y axis reflects the intensity each sample for each feature having the number
+    of samples reflected on the X axis.
+
+Ideally, there would be an upward trend from left to right, with more points on the right;
+if not, XCMS peak-picking parameters may need to be adjusted to suppress low-intensity 
+"noise" peaks or to address peak-splitting.
+
+
+### The `Symbol area/intensity reflect ion intensity` graph
+
+The upper right graph in the output figure shows the following:
+
+  + The X axis reflects the corrected retention time for each feature shown.
+  + The Y axis reflects the m/z for each feature shown.
+  + Symbol area reflects intensity for a feature for *one* sample.
+  + Overlapping symbols make the overlapping area darker, so the area and darkness
+    reflect the aggregated intensity of a feature.  (It is doubtful that a densitometer
+    would be able to recover aggregate intensities accurately from this graph, but
+    philosophically that is how this graph is designed.)
+  + The graph is not designed to communicate prevalence of a feature among the samples,
+    but the hue of the symbol reflects the prevalance, albeit subtly.
+
+Consequently, if the graph has a lot of large, dark, blueish symbols for repeated runs of a pooled
+sample, there is strong evidence that the XCMS peak-picking parameters need adjustment to
+make peak-picking more consistent.
+
+### The `Symbol size/shape reflects prevalence` graph
+
+By contrast with the area/intensity graph, lower right graph's primary purpose is to communicate 
+prevalence of a feature among the samples.  It`shows the following:
+
+  + The X axis reflects the corrected retention time for each feature shown.
+  + The Y axis reflects the m/z for each feature shown.
+  + Symbol size and shape reflect the prevalence of a feature among the samples.
+  + "Vividness" of color reflects the aggregate intensity across all samples for a feature,
+    in an attempt to draw attention to the more intense features "pop".
+
+Consequently, if the graph has a lot of small, vivid symbols for repeated runs of a pooled
+sample, there is strong evidence that the XCMS peak-picking parameters need adjustment to
+make peak-picking more consistent.

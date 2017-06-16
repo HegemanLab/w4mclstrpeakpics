@@ -10,15 +10,15 @@ pool_peak_assessment(sample_selector_column_name = "sampleType",
   output_rdata = "")
 }
 \arguments{
-\item{sample_selector_column_name}{string input: column holding selector string values (default: "sampleType")}
+\item{sample_selector_column_name}{string input: column of W4M/XCMS sampleMetadata holding selector string values (default: "sampleType")}
 
 \item{sample_selector_value}{string input: value within selector column to identify samples for analysis (default: "pool")}
 
-\item{sample_metadata_path}{string input: path to W4M sampleMetadata tab-separated values file}
+\item{sample_metadata_path}{string input: path to W4M/XCMS sampleMetadata tab-separated values file}
 
-\item{variable_metadata_path}{string input: path to W4M variableMetadata tab-separated values file}
+\item{variable_metadata_path}{string input: path to W4M/XCMS variableMetadata tab-separated values file}
 
-\item{data_matrix_path}{string input: path to W4M dataMatrix tab-separated values file}
+\item{data_matrix_path}{string input: path to W4M/XCMS dataMatrix tab-separated values file}
 
 \item{output_pdf}{string output: path to write assessment figure PDF}
 

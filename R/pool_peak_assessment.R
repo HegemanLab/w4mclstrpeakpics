@@ -125,7 +125,8 @@ compute_plots <- function(plot_env) {
   how_likely_are_features <- ( how_many_features_have_count * seq_1_to_maxcounts ) / max_counts
   proportionate_likelihood <- how_likely_are_features / sum(how_likely_are_features)
 
-  pch = c(1,17)
+  pch    <- c(1,17)
+  my_col <- c("black","olivedrab")
   plot_env$l_matplot_1 <- list(
     x = seq_1_to_maxcounts
   , y = data.frame (
@@ -135,16 +136,17 @@ compute_plots <- function(plot_env) {
   , pch  = pch
   , ylim = c( 0, max(1.1 * max(how_many_features_have_count)) )
   , xlab = "Count of Samples having Feature"
-  , ylab = "Likelihood of Features having Count"
+  , ylab = "Number of, or Relative Likelihood of, Features having Count"
   , main = "Feature Number and Likelihood"
   , sub = "(Prevalence)"
+  , col = my_col
   )
   plot_env$l_legend_1 <- list(
     x = 4
   , y = 1.1 * max(how_many_features_have_count)
   , legend = c("Number of features", "Likelihood of features")
   , pch  = pch
-  , col = 1:2
+  , col = my_col
   , cex = 0.75
   )
 
@@ -210,7 +212,7 @@ compute_plots <- function(plot_env) {
     order by mz, rt
   ")
 
-  # diameter reflects intensity, color reflects prevalence
+  # diameter reflects intensity, hue reflects prevalence
   with(
     heatplotdata
   , {
@@ -231,7 +233,7 @@ compute_plots <- function(plot_env) {
               )
       , pch = 16
       , main = "Symbol area/intensity reflect ion intensity"
-      , sub = "Symbol color subtly reflects prevalence"
+      , sub = "Symbol hue subtly reflects prevalence"
       )
       lcol <- grDevices::hcl(
                 h = 180 * (1 + 1:10 / max_counts)
@@ -325,6 +327,7 @@ draw_plots <- function(plot_env) {
     x    = plot_env$l_matplot_1$x
   , y    = plot_env$l_matplot_1$y
   , pch  = plot_env$l_matplot_1$pch
+  , col  = plot_env$l_matplot_1$col
   , ylim = plot_env$l_matplot_1$ylim
   , xlab = ""
   , ylab = ""
