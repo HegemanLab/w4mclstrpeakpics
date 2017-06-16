@@ -80,35 +80,27 @@ compute_plots <- function(plot_env) {
   # read data structures
   suppressWarnings({
 
-    sampleMetadata <- readr::read_delim(
-      file = plot_env$sample_metadata_path
-    , delim = "\t"
-    , escape_double = FALSE
-    , col_names = TRUE
-    # , trim_ws = TRUE
+    read_data_frame <- function(file_path) {
+      read.delim(file_path, fill = FALSE)
+    }
+
+    sampleMetadata <- read_data_frame(
+      file_path = plot_env$sample_metadata_path
     )
 
-    variableMetadata <- readr::read_delim(
-      file = plot_env$variable_metadata_path
-    , delim = "\t"
-    , escape_double = FALSE
-    , col_names = TRUE
-    # , trim_ws = TRUE
+    variableMetadata <- read_data_frame(
+      file_path = plot_env$variable_metadata_path
     )
 
-    dataMatrix <- readr::read_delim(
-      file = plot_env$data_matrix_path
-    , delim = "\t"
-    , escape_double = FALSE
-    , col_names = TRUE
-    # , trim_ws = TRUE
+    dataMatrix <- read_data_frame(
+      file_path = plot_env$data_matrix_path
     )
 
   })
 
   # identify names of pooled samples
 
-  selected_samples <- sampleMetadata[sampleMetadata[plot_env$sample_selector] == plot_env$sample_selector_value,1][[1]] 
+  selected_samples <- sampleMetadata[sampleMetadata[plot_env$sample_selector] == plot_env$sample_selector_value,1]
 
 
   # extract matrix of intensities for only pooled samples
