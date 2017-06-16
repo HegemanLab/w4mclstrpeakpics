@@ -84,7 +84,7 @@ compute_plots <- function(plot_env) {
     , delim = "\t"
     , escape_double = FALSE
     , col_names = TRUE
-    , trim_ws = TRUE
+    # , trim_ws = TRUE
     )
 
     variableMetadata <- readr::read_delim(
@@ -92,7 +92,7 @@ compute_plots <- function(plot_env) {
     , delim = "\t"
     , escape_double = FALSE
     , col_names = TRUE
-    , trim_ws = TRUE
+    # , trim_ws = TRUE
     )
 
     dataMatrix <- readr::read_delim(
@@ -100,7 +100,7 @@ compute_plots <- function(plot_env) {
     , delim = "\t"
     , escape_double = FALSE
     , col_names = TRUE
-    , trim_ws = TRUE
+    # , trim_ws = TRUE
     )
 
   })
