@@ -231,7 +231,7 @@ compute_plots <- function(plot_env) {
               )
       , pch = 16
       , main = "Symbol area/intensity reflect ion intensity"
-      , sub = "Color subtly reflects prevalence"
+      , sub = "Symbol color subtly reflects prevalence"
       )
       lcol <- grDevices::hcl(
                 h = 180 * (1 + 1:10 / max_counts)
@@ -279,7 +279,7 @@ compute_plots <- function(plot_env) {
                   )
           , pch = pch[count]
           , main = "Symbol size/shape reflects prevalence"
-          , sub = "Color vividness reflects intensity"
+          , sub = "Symbol color vividness subtly reflects intensity"
           )
           plot_env$l_legend_4 <<- list(
             x = max(rt)
@@ -326,10 +326,20 @@ draw_plots <- function(plot_env) {
   , y    = plot_env$l_matplot_1$y
   , pch  = plot_env$l_matplot_1$pch
   , ylim = plot_env$l_matplot_1$ylim
-  , xlab = plot_env$l_matplot_1$xlab
+  , xlab = ""
+  , ylab = ""
+  , main = ""
+  , sub  = ""
+  )
+  title(
+    xlab = plot_env$l_matplot_1$xlab
   , ylab = plot_env$l_matplot_1$ylab
   , main = plot_env$l_matplot_1$main
   , sub  = plot_env$l_matplot_1$sub 
+  , mgp  = c(2,1,0)
+  , cex.lab = 1.2
+  , cex.sub = 1.2
+  , cex.main = 1.2
   )
   legend(
     x      = plot_env$l_legend_1$x
@@ -343,12 +353,22 @@ draw_plots <- function(plot_env) {
   plot(
     x    = plot_env$l_plot_2$x   
   , y    = plot_env$l_plot_2$y   
-  , xlab = plot_env$l_plot_2$xlab
+  , xlab = ""
+  , ylab = ""
+  , main = ""
+  , sub  = ""
+  , col  = plot_env$l_plot_2$col 
+  , pch  = plot_env$l_plot_2$pch 
+  )
+  title(
+    xlab = plot_env$l_plot_2$xlab
   , ylab = plot_env$l_plot_2$ylab
   , main = plot_env$l_plot_2$main
   , sub  = plot_env$l_plot_2$sub 
-  , col  = plot_env$l_plot_2$col 
-  , pch  = plot_env$l_plot_2$pch 
+  , mgp  = c(2,1,0)
+  , cex.lab = 1.2
+  , cex.sub = 1.2
+  , cex.main = 1.2
   )
 
   plot(
@@ -358,10 +378,20 @@ draw_plots <- function(plot_env) {
   , cex  = plot_env$l_plot_3$cex
   , col  = plot_env$l_plot_3$col
   , pch  = plot_env$l_plot_3$pch
-  , xlab = plot_env$l_plot_3$xlab
+  , xlab = ""
+  , ylab = ""
+  , main = ""
+  , sub  = ""
+  )
+  title(
+    xlab = plot_env$l_plot_3$xlab
   , ylab = plot_env$l_plot_3$ylab
   , main = plot_env$l_plot_3$main
   , sub  = plot_env$l_plot_3$sub
+  , mgp  = c(2,1,0)
+  , cex.lab = 1.2
+  , cex.sub = 1.2
+  , cex.main = 1.2
   )
   legend(
     x      = plot_env$l_legend_3$x
@@ -379,10 +409,20 @@ draw_plots <- function(plot_env) {
   , cex  = plot_env$l_plot_4$cex 
   , col  = plot_env$l_plot_4$col 
   , pch  = plot_env$l_plot_4$pch 
-  , xlab = plot_env$l_plot_4$xlab
+  , xlab = ""
+  , ylab = ""
+  , main = ""
+  , sub  = ""
+  )
+  title(
+    xlab = plot_env$l_plot_4$xlab
   , ylab = plot_env$l_plot_4$ylab
   , main = plot_env$l_plot_4$main
   , sub  = plot_env$l_plot_4$sub 
+  , mgp  = c(2,1,0)
+  , cex.lab = 1.2
+  , cex.sub = 1.2
+  , cex.main = 1.2
   )
   legend(
     x      = plot_env$l_legend_4$x     
