@@ -44,14 +44,6 @@ pool_peak_assessment <- function(
 
   compute_plots(peak_assessment_env)
 
-  # capture plot and write to PDF; then close any devices opened in the process
-  plot2pdf(
-    file_name     = peak_assessment_env$output_pdf
-  , plot_function = function() { draw_plots(peak_assessment_env) }
-  , width         = 12
-  , height        = 12
-  )
-
   # write results
   result <- peak_assessment_env$df_result
   prevalence <- result$prevalence
@@ -66,6 +58,15 @@ pool_peak_assessment <- function(
   if (nchar(peak_assessment_env$output_rdata) > 0) {
     save( peak_assessment_env, file = peak_assessment_env$output_rdata )
   }
+
+  # capture plot and write to PDF; then close any devices opened in the process
+  plot2pdf(
+    file_name     = peak_assessment_env$output_pdf
+  , plot_function = function() { draw_plots(peak_assessment_env) }
+  , width         = 12
+  , height        = 12
+  )
+
   return (peak_assessment_env)
 }
 

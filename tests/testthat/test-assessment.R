@@ -35,6 +35,7 @@ test_that("assessment test",{
   dataMatrix_in <- "input_dataMatrix.tsv"
   assessment_pdf <- "output_assessment.pdf"
   assessment_out <- "output_assessment.tsv"
+  assessment_rda <- "output_assessment.rda"
   assessment_exp <- "expected_assessment.tsv"
   sample_selector_value       <- "pool"
   sample_selector_column_name <- "sampleType"
@@ -57,7 +58,7 @@ test_that("assessment test",{
   , data_matrix_path            = dataMatrix_in
   , output_pdf                  = assessment_pdf                 
   , output_tsv                  = assessment_out                 
-  , output_rdata                = ""            
+  , output_rdata                = assessment_rda            
   )
   
   # read actual output file
