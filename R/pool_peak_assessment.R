@@ -1,3 +1,7 @@
+#library(grDevices)
+#library(reshape2)
+#library(sqldf)
+
 #' @title
 #' W4M Cluster Peak Pics
 #'
@@ -31,6 +35,7 @@ pool_peak_assessment <- function(
 , output_pdf            
 , output_tsv            
 , output_rdata                = ""            
+, failure_action              = print
 ) {
   peak_assessment_env                        <- new.env()
   peak_assessment_env$sample_selector_value  <- sample_selector_value 
@@ -42,62 +47,145 @@ pool_peak_assessment <- function(
   peak_assessment_env$output_tsv             <- output_tsv            
   peak_assessment_env$output_rdata           <- output_rdata          
 
-  compute_plots(peak_assessment_env)
+  compute_plots(peak_assessment_env, failure_action)
 
   # write results
   result <- peak_assessment_env$df_result
   prevalence <- result$prevalence
-  write.table(
-    x = result #[max(prevalence):min(prevalence),]
-  , sep = "\t"
-  , file = peak_assessment_env$output_tsv
-  , quote = FALSE
-  , row.names = FALSE
+  write_env <- write_result(
+    result = result
+  , file_path = peak_assessment_env$output_tsv
+  , kind_string = "output table"
+  , failure_action
   )
-
-  if (nchar(peak_assessment_env$output_rdata) > 0) {
-    save( peak_assessment_env, file = peak_assessment_env$output_rdata )
+  if (!is.environment(write_env)) {
+    stop(sprintf("write_result failed, producing result %s",as.character(write_env)))
+  }
+  if ( write_env$success != TRUE ) {
+    stop(write_env$msg)
   }
 
-  # capture plot and write to PDF; then close any devices opened in the process
-  plot2pdf(
-    file_name     = peak_assessment_env$output_pdf
-  , plot_function = function() { draw_plots(peak_assessment_env) }
-  , width         = 12
-  , height        = 12
-  )
+  result_env <- new.env()
+  result_env$result <- FALSE
+  tcr <- tryCatch.W.E({
+    result <<- TRUE
+    # save RData if requested
+    if (nchar(peak_assessment_env$output_rdata) > 0) {
+      save( peak_assessment_env, file = peak_assessment_env$output_rdata )
+    }
+    # capture plot and write to PDF; then close any devices opened in the process
+    plot2pdf(
+      file_name     = peak_assessment_env$output_pdf
+    , plot_function = function() { draw_plots(peak_assessment_env) }
+    , width         = 12
+    , height        = 12
+    )
+    result_env$result <- TRUE
+  })
+  if (!result_env$result) {
+    str(tcr)
+  }
 
-  return (peak_assessment_env)
+  return (result_env$result)
 }
 
-#library(grDevices)
-#library(readr)
-#library(reshape2)
-#library(sqldf)
+ # from 'demo(error.catching)'
+tryCatch.W.E <- function(expr) {
+  W <- NULL
+  w.handler <- function(w){
+    # warning handler
+    W <<- w
+    invokeRestart("muffleWarning")
+  }
+  list(
+    value = withCallingHandlers(
+      tryCatch(expr, error = function(e) e)
+    , warning = w.handler
+    )
+  , warning = W
+  )
+}
 
-compute_plots <- function(plot_env) {
+
+write_result <- function(result, file_path, kind_string, failure_action = print) {
+  my.env <- new.env()
+  my.env$success <- FALSE
+  my.env$msg <- sprintf("no message writing %s", kind_string)
+  tryCatch(
+    expr = {
+      write.table(
+        x = result
+      , sep = "\t"
+      , file = file_path
+      , quote = FALSE
+      , row.names = FALSE
+      )
+      my.env$success <- TRUE
+    }
+  , error = function(e) {
+     my.env$msg <- sprintf("%s write failed", kind_string)
+    }
+  )
+  if (!my.env$success) {
+    failure_action(my.env$msg)
+    return ( FALSE )
+  }
+  return (my.env)
+}
+
+# read_data_frame - read a w4m data frame, with error handling
+#   e.g., data_matrix_input_env <- read_data_frame(dataMatrix_in, "data matrix input")
+read_data_frame <- function(file_path, kind_string, failure_action = failure_action) {
+  my.env <- new.env()
+  my.env$success <- FALSE
+  my.env$msg <- sprintf("no message reading %s", kind_string)
+  tryCatch(
+    expr = {
+      my.env$data    <- utils::read.delim( fill = FALSE, file = file_path )
+      my.env$success <- TRUE
+    }
+  , error = function(e) {
+     my.env$ msg <- sprintf("%s read failed", kind_string)
+    }
+  )
+  if (!my.env$success) {
+    failure_action(my.env$msg)
+    return ( FALSE )
+  }
+  return (my.env)
+}
+
+compute_plots <- function(plot_env, failure_action = print) {
 
   # read data structures
-  suppressWarnings({
 
-    read_data_frame <- function(file_path) {
-      read.delim(file_path, fill = FALSE)
-    }
+  # read in the sample metadata
+  smpl_metadata_input_env <- read_data_frame(plot_env$sample_metadata_path, "sample metadata input")
+  if (!smpl_metadata_input_env$success) {
+    failure_action(smpl_metadata_input_env$msg)
+    return ( FALSE )
+  }
+  sampleMetadata <- smpl_metadata_input_env$data
 
-    sampleMetadata <- read_data_frame(
-      file_path = plot_env$sample_metadata_path
-    )
-
-    variableMetadata <- read_data_frame(
-      file_path = plot_env$variable_metadata_path
-    )
-
-    dataMatrix <- read_data_frame(
-      file_path = plot_env$data_matrix_path
-    )
-
-  })
-
+  # read in the variable metadata
+  vrbl_metadata_input_env <- read_data_frame(plot_env$variable_metadata_path, "variable metadata input")
+  if (!vrbl_metadata_input_env$success) {
+    failure_action(vrbl_metadata_input_env$msg)
+    return ( FALSE )
+  }
+  variableMetadata <- vrbl_metadata_input_env$data
+  
+  # read in the data matrix
+  #   dataMatrix <- read_data_frame(
+  #     file_path = plot_env$data_matrix_path
+  #   )
+  data_matrix_input_env <- read_data_frame(plot_env$data_matrix_path, "data matrix input")
+  if (!data_matrix_input_env$success) {
+    failure_action(data_matrix_input_env$msg)
+    return ( FALSE )
+  }
+  dataMatrix <- data_matrix_input_env$data
+  
   # identify names of pooled samples
 
   selected_samples <- sampleMetadata[sampleMetadata[plot_env$sample_selector] == plot_env$sample_selector_value,1]
