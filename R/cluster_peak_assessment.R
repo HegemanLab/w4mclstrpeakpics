@@ -2,13 +2,13 @@
 #library(reshape2)
 #library(sqldf)
 
+
 #' @title
 #' W4M Cluster Peak Pics
 #'
 #' @description
 #' Visualize feature-peaks among a cluster of samples identified through W4M XCMS preprocessing.
 #'
-#' @param m  matrix: W4M data matrix potentially containing NA or negative values
 #' @param sample_selector_column_name string input: column of W4M/XCMS sampleMetadata holding selector string values (default: "sampleType")
 #' @param sample_selector_value       string input: value within selector column to identify samples for analysis (default: "pool")
 #' @param sample_metadata_path        string input: path to W4M/XCMS sampleMetadata tab-separated values file 
@@ -17,6 +17,7 @@
 #' @param output_pdf                  string output: path to write assessment figure PDF
 #' @param output_tsv                  string output: path to write assessment summary tab-separated values file
 #' @param output_rdata                string output: (optional) path to write RData containing all processing and plotting intermediates
+#' @param failure_action              function(msg): action to take when a failure occurs (defalut: "print")
 #'
 #' @return environment: env containing 'df_result' that was written to output_tsv plus all intermediate and plotted variables (see source code)
 #' 
@@ -25,8 +26,12 @@
 #' @seealso \url{https://github.com/HegemanLab/w4mclstrpeakpics}
 #' @seealso \url{http://workflow4metabolomics.org/}
 #'
+#' @importFrom grDevices dev.list dev.off pdf rgb
+#' @importFrom graphics legend matplot par plot title
+#' @importFrom utils str write.table
+#'
 #' @export
-pool_peak_assessment <- function(
+cluster_peak_assessment <- function(
   sample_selector_column_name = "sampleType"
 , sample_selector_value       = "pool"
 , sample_metadata_path  

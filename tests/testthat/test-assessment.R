@@ -50,7 +50,7 @@ test_that("assessment test",{
   expect_true(variable_metadata_input_env$success, info = "read variable metadata input")
   rm(variable_metadata_input_env)
   # filter, impute, and write output
-  assessment_result <- pool_peak_assessment(
+  assessment_result <- cluster_peak_assessment(
     sample_selector_value       = sample_selector_value
   , sample_selector_column_name = sample_selector_column_name
   , sample_metadata_path        = sampleMetadata_in
