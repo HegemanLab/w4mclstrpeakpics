@@ -142,7 +142,7 @@ prevalence of a feature among the samples.  It`shows the following:
   + The Y axis reflects the m/z for each feature shown.
   + Symbol size and shape reflect the prevalence of a feature among the samples.
   + "Vividness" of color reflects the aggregate intensity across all samples for a feature,
-    in an attempt to draw attention to the more intense features "pop".
+    in an attempt to draw attention to the more intense features.
 
 Consequently, if the graph has a lot of small, vivid symbols for repeated runs of a pooled
 sample, there is strong evidence that the XCMS peak-picking parameters need adjustment to
